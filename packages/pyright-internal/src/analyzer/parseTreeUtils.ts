@@ -593,6 +593,21 @@ export function getEnclosingClass(node: ParseNode, stopAtFunction = false): Clas
     return undefined;
 }
 
+export function getEnclosingScope(node: ParseNode): ModuleNode | ClassNode | FunctionNode {
+    let curNode = node.parent;
+
+    while (curNode) {
+        if (curNode.nodeType === ParseNodeType.Module || curNode.nodeType === ParseNodeType.Class || curNode.nodeType === ParseNodeType.Function) {
+            return curNode;
+        }
+
+        curNode = curNode.parent;
+    }
+
+    fail('Module node not found');
+    return undefined!;
+}
+
 export function getEnclosingModule(node: ParseNode): ModuleNode {
     let curNode = node.parent;
     while (curNode) {

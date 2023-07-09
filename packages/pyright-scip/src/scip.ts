@@ -1292,6 +1292,7 @@ export namespace scip {
             override_documentation?: string[];
             syntax_kind?: SyntaxKind;
             diagnostics?: Diagnostic[];
+            enclosing_range?: number[];
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1, 4, 6], this.#one_of_decls);
@@ -1313,6 +1314,9 @@ export namespace scip {
                 }
                 if ("diagnostics" in data && data.diagnostics != undefined) {
                     this.diagnostics = data.diagnostics;
+                }
+                if ("enclosing_range" in data && data.enclosing_range != undefined) {
+                    this.enclosing_range = data.enclosing_range;
                 }
             }
         }
@@ -1352,6 +1356,12 @@ export namespace scip {
         set diagnostics(value: Diagnostic[]) {
             pb_1.Message.setRepeatedWrapperField(this, 6, value);
         }
+        get enclosing_range() {
+            return pb_1.Message.getFieldWithDefault(this, 7, []) as number[];
+        }
+        set enclosing_range(value: number[]) {
+            pb_1.Message.setField(this, 7, value);
+        }
         static fromObject(data: {
             range?: number[];
             symbol?: string;
@@ -1359,6 +1369,7 @@ export namespace scip {
             override_documentation?: string[];
             syntax_kind?: SyntaxKind;
             diagnostics?: ReturnType<typeof Diagnostic.prototype.toObject>[];
+            enclosing_range?: number[];
         }): Occurrence {
             const message = new Occurrence({});
             if (data.range != null) {
@@ -1379,6 +1390,9 @@ export namespace scip {
             if (data.diagnostics != null) {
                 message.diagnostics = data.diagnostics.map(item => Diagnostic.fromObject(item));
             }
+            if (data.enclosing_range != null) {
+                message.enclosing_range = data.enclosing_range;
+            }
             return message;
         }
         toObject() {
@@ -1389,6 +1403,7 @@ export namespace scip {
                 override_documentation?: string[];
                 syntax_kind?: SyntaxKind;
                 diagnostics?: ReturnType<typeof Diagnostic.prototype.toObject>[];
+                enclosing_range?: number[];
             } = {};
             if (this.range != null) {
                 data.range = this.range;
@@ -1408,6 +1423,9 @@ export namespace scip {
             if (this.diagnostics != null) {
                 data.diagnostics = this.diagnostics.map((item: Diagnostic) => item.toObject());
             }
+            if (this.enclosing_range != null) {
+                data.enclosing_range = this.enclosing_range;
+            }
             return data;
         }
         serialize(): Uint8Array;
@@ -1426,6 +1444,8 @@ export namespace scip {
                 writer.writeEnum(5, this.syntax_kind);
             if (this.diagnostics.length)
                 writer.writeRepeatedMessage(6, this.diagnostics, (item: Diagnostic) => item.serialize(writer));
+            if (this.enclosing_range.length)
+                writer.writePackedInt32(7, this.enclosing_range);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -1452,6 +1472,9 @@ export namespace scip {
                         break;
                     case 6:
                         reader.readMessage(message.diagnostics, () => pb_1.Message.addToRepeatedWrapperField(message, 6, Diagnostic.deserialize(reader), Diagnostic));
+                        break;
+                    case 7:
+                        message.enclosing_range = reader.readPackedInt32();
                         break;
                     default: reader.skipField();
                 }

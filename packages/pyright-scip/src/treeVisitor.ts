@@ -1390,11 +1390,14 @@ export class TreeVisitor extends ParseTreeWalker {
     private pushNewOccurrence(node: ParseNode, symbol: ScipSymbol, role: number = scip.SymbolRole.ReadAccess): void {
         softAssert(symbol.value.trim() == symbol.value, `Invalid symbol ${node} -> ${symbol.value}`);
 
+        let enclosingScope = ParseTreeUtils.getEnclosingScope(node);
+
         this.document.occurrences.push(
             new scip.Occurrence({
                 symbol_roles: role,
                 symbol: symbol.value,
                 range: parseNodeToRange(node, this.fileInfo!.lines).toLsif(),
+                enclosing_range: parseNodeToRange(enclosingScope, this.fileInfo!.lines).toLsif()
             })
         );
     }
