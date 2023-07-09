@@ -1040,6 +1040,7 @@ export namespace scip {
             symbol?: string;
             documentation?: string[];
             relationships?: Relationship[];
+            enclosing_symbol?: string;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [3, 4], this.#one_of_decls);
@@ -1052,6 +1053,9 @@ export namespace scip {
                 }
                 if ("relationships" in data && data.relationships != undefined) {
                     this.relationships = data.relationships;
+                }
+                if ("enclosing_symbol" in data && data.enclosing_symbol != undefined) {
+                    this.enclosing_symbol = data.enclosing_symbol;
                 }
             }
         }
@@ -1073,10 +1077,17 @@ export namespace scip {
         set relationships(value: Relationship[]) {
             pb_1.Message.setRepeatedWrapperField(this, 4, value);
         }
+        get enclosing_symbol() {
+            return pb_1.Message.getFieldWithDefault(this, 8, "") as string;
+        }
+        set enclosing_symbol(value: string) {
+            pb_1.Message.setField(this, 8, value);
+        }
         static fromObject(data: {
             symbol?: string;
             documentation?: string[];
             relationships?: ReturnType<typeof Relationship.prototype.toObject>[];
+            enclosing_symbol?: string;
         }): SymbolInformation {
             const message = new SymbolInformation({});
             if (data.symbol != null) {
@@ -1088,6 +1099,9 @@ export namespace scip {
             if (data.relationships != null) {
                 message.relationships = data.relationships.map(item => Relationship.fromObject(item));
             }
+            if (data.enclosing_symbol != null) {
+                message.enclosing_symbol = data.enclosing_symbol;
+            }
             return message;
         }
         toObject() {
@@ -1095,6 +1109,7 @@ export namespace scip {
                 symbol?: string;
                 documentation?: string[];
                 relationships?: ReturnType<typeof Relationship.prototype.toObject>[];
+                enclosing_symbol?: string;
             } = {};
             if (this.symbol != null) {
                 data.symbol = this.symbol;
@@ -1104,6 +1119,9 @@ export namespace scip {
             }
             if (this.relationships != null) {
                 data.relationships = this.relationships.map((item: Relationship) => item.toObject());
+            }
+            if (this.enclosing_symbol != null) {
+                data.enclosing_symbol = this.enclosing_symbol;
             }
             return data;
         }
@@ -1117,6 +1135,8 @@ export namespace scip {
                 writer.writeRepeatedString(3, this.documentation);
             if (this.relationships.length)
                 writer.writeRepeatedMessage(4, this.relationships, (item: Relationship) => item.serialize(writer));
+            if (this.enclosing_symbol.length)
+                writer.writeString(8, this.enclosing_symbol);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -1134,6 +1154,8 @@ export namespace scip {
                         break;
                     case 4:
                         reader.readMessage(message.relationships, () => pb_1.Message.addToRepeatedWrapperField(message, 4, Relationship.deserialize(reader), Relationship));
+                    case 8:
+                        message.enclosing_symbol = reader.readString();
                         break;
                     default: reader.skipField();
                 }
@@ -1473,7 +1495,7 @@ export namespace scip {
                     case 6:
                         reader.readMessage(message.diagnostics, () => pb_1.Message.addToRepeatedWrapperField(message, 6, Diagnostic.deserialize(reader), Diagnostic));
                         break;
-                    case 7:
+                    case 8:
                         message.enclosing_range = reader.readPackedInt32();
                         break;
                     default: reader.skipField();

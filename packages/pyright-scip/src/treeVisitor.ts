@@ -283,12 +283,7 @@ export class TreeVisitor extends ParseTreeWalker {
                 _cancellationToken
             );
 
-            this.document.symbols.push(
-                new scip.SymbolInformation({
-                    symbol: this.getScipSymbol(node).value,
-                    documentation: _formatHover(hoverResult!),
-                })
-            );
+            this.pushNewSymbol(node, _formatHover(hoverResult!));
         }
 
         return true;
@@ -313,12 +308,7 @@ export class TreeVisitor extends ParseTreeWalker {
                     }
 
                     // node.typeAnnotationComment
-                    this.document.symbols.push(
-                        new scip.SymbolInformation({
-                            symbol: this.getScipSymbol(dec.node).value,
-                            documentation,
-                        })
-                    );
+                    this.pushNewSymbol(dec.node, documentation);
                 }
             }
         }
@@ -417,13 +407,8 @@ export class TreeVisitor extends ParseTreeWalker {
         }
 
         let relationships: scip.Relationship[] | undefined = this.getFunctionRelationships(node);
-        this.document.symbols.push(
-            new scip.SymbolInformation({
-                symbol: this.getScipSymbol(node).value,
-                documentation,
-                relationships,
-            })
-        );
+
+        this.pushNewSymbol(node, documentation, relationships);
 
         // Since we are manually handling various aspects, we need to make sure that we handle
         // - decorators
@@ -447,12 +432,7 @@ export class TreeVisitor extends ParseTreeWalker {
 
             const paramDocumentation = paramDocstring ? [paramDocstring] : undefined;
 
-            this.document.symbols.push(
-                new scip.SymbolInformation({
-                    symbol: symbol.value,
-                    documentation: paramDocumentation,
-                })
-            );
+            this.pushNewSymbol(paramNode, paramDocumentation);
 
             // Walk the parameter child nodes
             this.walk(paramNode);
@@ -782,13 +762,7 @@ export class TreeVisitor extends ParseTreeWalker {
                             });
                     }
 
-                    this.document.symbols.push(
-                        new scip.SymbolInformation({
-                            symbol: symbol.value,
-                            documentation,
-                            relationships,
-                        })
-                    );
+                    this.pushNewSymbol(parent, documentation, relationships);
                 }
             }
 
@@ -1400,6 +1374,20 @@ export class TreeVisitor extends ParseTreeWalker {
                 enclosing_range: parseNodeToRange(enclosingScope, this.fileInfo!.lines).toLsif()
             })
         );
+    }
+
+    private pushNewSymbol(node: ParseNode, documentation: string[] | undefined, relationships: scip.Relationship[] | undefined = undefined): void {
+        let symbol = this.getScipSymbol(node).value;
+        let enclosingNode = ParseTreeUtils.getEnclosingScope(node);
+
+        this.document.symbols.push(
+            new scip.SymbolInformation({
+                symbol: symbol,
+                documentation,
+                relationships,
+                enclosing_symbol: this.getScipSymbol(enclosingNode).value
+            })
+        )
     }
 
     // TODO: Can remove module name? or should I pass more info in...
